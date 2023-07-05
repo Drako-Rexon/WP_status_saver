@@ -16,5 +16,5 @@ A flutter app which is functioning to save the images and videos of statuses. Th
   video_thumbnail: ^0.5.3 -->
 
 
-[!Screenshot 1](assets/images/1.jpg)
-[!Screenshot 2](assets/images/2.jpg)
+![Screenshot 1](assets/images/1.jpg)
+![Screenshot 2](assets/images/2.jpg)

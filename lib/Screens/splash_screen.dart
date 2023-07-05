@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wp_status_saver/Screens/homepage.dart';
+import 'package:wp_status_saver/constants/constants.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -26,9 +27,9 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       body: Center(
-        child: FlutterLogo(),
+        child: Center(child: Image.asset(logo)),
       ),
     );
   }
