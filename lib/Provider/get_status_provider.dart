@@ -14,9 +14,15 @@ class GetStatusProvider extends ChangeNotifier {
   bool get isWhatsAppAvailable => _isWhatsAppAvailable;
 
   void getStatus(String ext) async {
+    // for android lower than 14
     final status = await Permission.storage.request();
-    await Permission.manageExternalStorage.request();
+    final statusmanage = await Permission.manageExternalStorage.request();
+    // final statusImage = await Permission.photos.request();
+    // final statusVideo = await Permission.videos.request();
 
+    // log("image status: $statusImage");
+    // log("video status: $statusVideo");
+    log("status: ${status.isGranted}");
     if (status.isDenied) {
       await Permission.storage.request();
       log("Permission Denied");
