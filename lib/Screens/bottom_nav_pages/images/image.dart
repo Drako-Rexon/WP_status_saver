@@ -28,9 +28,11 @@ class _ImageHomePageState extends State<ImageHomePage> {
       size: AdSize.banner,
       listener: BannerAdListener(
         onAdLoaded: (ad) {
-          setState(() {
-            _bannerAd = ad as BannerAd;
-          });
+          if (mounted) {
+            setState(() {
+              _bannerAd = ad as BannerAd;
+            });
+          }
         },
         onAdFailedToLoad: (ad, error) {
           log("Failed to load the banner");
@@ -42,76 +44,102 @@ class _ImageHomePageState extends State<ImageHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        flexibleSpace: _bannerAd != null
-            ? SizedBox(
-                height: _bannerAd!.size.height.toDouble(),
-                width: _bannerAd!.size.width.toDouble(),
-                child: AdWidget(
-                  ad: _bannerAd!,
-                ),
-              )
-            : const SizedBox.shrink(),
-      ),
-      body: Consumer<GetStatusProvider>(
-        builder: (ctx, val, _) {
-          if (!isFetched) {
-            val.getStatus(".jpg");
-            Future.delayed(
-                const Duration(milliseconds: 10), () => isFetched = true);
-          }
-          return Visibility(
-            visible: val.isWhatsAppAvailable,
-            replacement: const Center(child: Text("No WhatsApp Available...")),
-            child: Visibility(
-              visible: val.getImages.isNotEmpty,
-              replacement: const Center(child: Text("No Images Available")),
-              child: Container(
-                padding: const EdgeInsets.all(20),
-                child: GridView(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 8,
-                      mainAxisSpacing: 8),
-                  children: List.generate(
-                    val.getImages.length,
-                    (index) {
-                      final data = val.getImages[index];
-                      return GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => ImageView(imagePath: data.path),
-                            ),
-                          );
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            image: DecorationImage(
-                              fit: BoxFit.cover,
-                              image: FileImage(File(data.path)),
-                            ),
-                            color: Colors.white,
-                            boxShadow: const [
-                              BoxShadow(
-                                  color: Colors.black54,
-                                  blurRadius: 5,
-                                  offset: Offset(2, -2))
-                            ],
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(10)),
-                          ),
-                        ),
-                      );
-                    },
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          backgroundColor: const Color(0xfff2f7f8),
+          flexibleSpace: _bannerAd != null
+              ? SizedBox(
+                  height: _bannerAd!.size.height.toDouble(),
+                  width: _bannerAd!.size.width.toDouble(),
+                  child: AdWidget(
+                    ad: _bannerAd!,
                   ),
+                )
+              : const SizedBox.shrink(),
+        ),
+        body: Stack(
+          children: [
+            Container(
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width,
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topRight,
+                  end: Alignment.bottomLeft,
+                  colors: [
+                    Color(0xfff2f7f8),
+                    Color(0xffe8eef2),
+                  ],
                 ),
               ),
             ),
-          );
-        },
+            Consumer<GetStatusProvider>(
+              builder: (ctx, val, _) {
+                if (!isFetched) {
+                  val.getStatus(".jpg");
+                  Future.delayed(
+                      const Duration(milliseconds: 10), () => isFetched = true);
+                }
+                return Visibility(
+                  visible: val.isWhatsAppAvailable,
+                  replacement:
+                      const Center(child: Text("No WhatsApp Available...")),
+                  child: Visibility(
+                    visible: val.getImages.isNotEmpty,
+                    replacement:
+                        const Center(child: Text("No Images Available")),
+                    child: Container(
+                      padding: const EdgeInsets.all(20),
+                      child: GridView(
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                crossAxisSpacing: 8,
+                                mainAxisSpacing: 8),
+                        children: List.generate(
+                          val.getImages.length,
+                          (index) {
+                            final data = val.getImages[index];
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        ImageView(imagePath: data.path),
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                    fit: BoxFit.cover,
+                                    image: FileImage(File(data.path)),
+                                  ),
+                                  color: Colors.white,
+                                  boxShadow: const [
+                                    BoxShadow(
+                                        color: Colors.black12,
+                                        blurRadius: 5,
+                                        offset: Offset(-2, 2))
+                                  ],
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(10)),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

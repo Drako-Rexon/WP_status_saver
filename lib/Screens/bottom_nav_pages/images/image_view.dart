@@ -6,8 +6,8 @@ import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:share_plus/share_plus.dart';
 
 class ImageView extends StatefulWidget {
-  const ImageView({super.key, this.imagePath});
-  final String? imagePath;
+  const ImageView({super.key, required this.imagePath});
+  final String imagePath;
 
   @override
   State<ImageView> createState() => _ImageViewState();
@@ -23,11 +23,12 @@ class _ImageViewState extends State<ImageView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(),
       body: Container(
         decoration: BoxDecoration(
           color: Colors.grey,
           image: DecorationImage(
-            image: FileImage(File(widget.imagePath!)),
+            image: FileImage(File(widget.imagePath)),
           ),
         ),
       ),
@@ -40,7 +41,7 @@ class _ImageViewState extends State<ImageView> {
             onPressed: () async {
               switch (index) {
                 case 0:
-                  await ImageGallerySaver.saveFile(widget.imagePath!).then(
+                  await ImageGallerySaver.saveFile(widget.imagePath).then(
                     (value) => ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                           content: Text('Image saved into your gallery')),
@@ -55,7 +56,7 @@ class _ImageViewState extends State<ImageView> {
                   log("Print Image");
                   break;
                 case 2:
-                  Share.shareFiles([widget.imagePath!]).then(
+                  Share.shareFiles([widget.imagePath]).then(
                     (value) => ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Image has shared')),
                     ),

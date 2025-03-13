@@ -1,12 +1,14 @@
 import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:wp_status_saver/constants/constants.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 
 class GetStatusProvider extends ChangeNotifier {
-  List<FileSystemEntity> _getImages = [];
-  List<FileSystemEntity> _getVideos = [];
+  List<FileSystemEntity> _getImages = <FileSystemEntity>[];
+  List<FileSystemEntity> _getVideos = <FileSystemEntity>[];
   bool _isWhatsAppAvailable = false;
 
   List<FileSystemEntity> get getImages => _getImages;
@@ -14,18 +16,27 @@ class GetStatusProvider extends ChangeNotifier {
   bool get isWhatsAppAvailable => _isWhatsAppAvailable;
 
   void getStatus(String ext) async {
-    // for android lower than 14
-    final status = await Permission.storage.request();
-    final statusmanage = await Permission.manageExternalStorage.request();
-    // final statusImage = await Permission.photos.request();
-    // final statusVideo = await Permission.videos.request();
+    DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
+    PermissionStatus status;
+    AndroidDeviceInfo info = await deviceInfoPlugin.androidInfo;
 
-    // log("image status: $statusImage");
-    // log("video status: $statusVideo");
-    log("status: ${status.isGranted}");
+    if (info.version.sdkInt < 33) {
+      status = await Permission.storage.request();
+    } else {
+      status = await Permission.manageExternalStorage.request();
+    }
+
     if (status.isDenied) {
       await Permission.storage.request();
       log("Permission Denied");
+      await Fluttertoast.showToast(
+          msg: "The permission has been denied by the user.",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0);
       return;
     }
 
