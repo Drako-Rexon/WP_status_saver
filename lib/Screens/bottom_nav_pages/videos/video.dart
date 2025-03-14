@@ -2,15 +2,13 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:provider/provider.dart';
 import 'package:wp_status_saver/Provider/get_status_provider.dart';
 import 'package:wp_status_saver/Screens/bottom_nav_pages/videos/video_view.dart';
 import 'package:wp_status_saver/Utils/get_thumbnails.dart';
+import 'package:wp_status_saver/constants/constants.dart';
 import 'package:wp_status_saver/helper/ad_helper.dart';
-import 'package:wp_status_saver/widgets/download_button.dart';
 
 class VideoHomePage extends StatefulWidget {
   const VideoHomePage({super.key});
@@ -26,6 +24,11 @@ class _VideoHomePageState extends State<VideoHomePage> {
   @override
   void initState() {
     super.initState();
+    loadAd();
+  }
+
+  loadAd() {
+    // String adUnitId = await AdHelper.bannerAdUnitId;
     BannerAd(
       adUnitId: AdHelper.bannerAdUnitId,
       request: const AdRequest(),
@@ -103,104 +106,151 @@ class _VideoHomePageState extends State<VideoHomePage> {
                                     mainAxisSpacing: 8),
                             children: List.generate(
                               val.getVideos.length,
-                              (index) {
+                              (int index) {
                                 final data = val.getVideos[index];
-                                return FutureBuilder<String>(
-                                  future: getThumbnail(data.path),
-                                  builder: (context, snapshot) {
-                                    return snapshot.hasData
-                                        ? GestureDetector(
-                                            onTap: () {
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (_) => VideoView(
-                                                        videPath: data.path)),
-                                              );
-                                            },
-                                            child: Stack(
-                                              children: [
-                                                Container(
-                                                  decoration: BoxDecoration(
-                                                    image: DecorationImage(
-                                                      fit: BoxFit.cover,
-                                                      image: FileImage(
-                                                          File(snapshot.data!)),
-                                                    ),
-                                                    color: Colors.white,
-                                                    boxShadow: const [
-                                                      BoxShadow(
-                                                          color: Colors.black54,
-                                                          blurRadius: 5,
-                                                          offset: Offset(2, -2))
-                                                    ],
-                                                    borderRadius:
-                                                        const BorderRadius.all(
-                                                            Radius.circular(
-                                                                10)),
-                                                  ),
-                                                ),
-                                                Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.end,
-                                                  children: [
-                                                    Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment.end,
-                                                      children: [
-                                                        DownloadButton(
-                                                          function: () async {
-                                                            await ImageGallerySaver
-                                                                    .saveFile(
-                                                                        data.path)
-                                                                .then(
-                                                              (value) => Fluttertoast.showToast(
-                                                                  msg:
-                                                                      "The file has been saved into your gallery",
-                                                                  toastLength: Toast
-                                                                      .LENGTH_SHORT,
-                                                                  gravity:
-                                                                      ToastGravity
-                                                                          .SNACKBAR,
-                                                                  timeInSecForIosWeb:
-                                                                      1,
-                                                                  backgroundColor:
-                                                                      const Color(
-                                                                          0xff61FD5E),
-                                                                  textColor:
-                                                                      Colors
-                                                                          .black,
-                                                                  fontSize:
-                                                                      16.0),
-                                                            );
-                                                          },
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ],
-                                                ),
-                                              ],
+
+                                return FutureBuilder(
+                                    future: getThumbnail(data.path),
+                                    builder: (context, file) {
+                                      if (file.connectionState ==
+                                          ConnectionState.waiting) {
+                                        return const Center(
+                                            child: CircularProgressIndicator());
+                                      } else if (file.hasData) {
+                                        return InkWell(
+                                          overlayColor:
+                                              MaterialStateProperty.all(
+                                                  Colors.transparent),
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (_) => VideoView(
+                                                      videoPath: data.path)),
+                                            );
+                                          },
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              image: DecorationImage(
+                                                image: file.data == null
+                                                    ? Image.asset(logo).image
+                                                    : FileImage(
+                                                        File(file.data!.path)),
+                                              ),
                                             ),
-                                          )
-                                        : Container(
-                                            decoration: const BoxDecoration(
-                                              color: Colors.white,
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(10)),
-                                              boxShadow: [
-                                                BoxShadow(
-                                                    color: Colors.black54,
-                                                    blurRadius: 5,
-                                                    offset: Offset(2, -2)),
-                                              ],
-                                            ),
-                                            child: const Center(
-                                              child:
-                                                  CircularProgressIndicator(),
-                                            ),
-                                          );
-                                  },
-                                );
+                                          ),
+                                        );
+                                      } else {
+                                        return const Center(
+                                          child:
+                                              Text("There is something error"),
+                                        );
+                                      }
+                                    });
+                                // return Container(
+                                //   decoration: BoxDecoration(
+                                //       image: DecorationImage(
+                                //           image: Image.file(
+                                //                   getThumbnail(data.path))
+                                //               .image)),
+                                // );
+                                // return FutureBuilder<String>(
+                                //   future: Future.delayed(
+                                //       const Duration(seconds: 10), () => ""),
+                                //   builder: (context, snapshot) {
+                                //     return snapshot.hasData
+                                //         ? GestureDetector(
+                                //             onTap: () {
+                                //               Navigator.push(
+                                //                 context,
+                                //                 MaterialPageRoute(
+                                //                     builder: (_) => VideoView(
+                                //                         videPath: data.path)),
+                                //               );
+                                //             },
+                                //             child: Stack(
+                                //               children: [
+                                //                 Container(
+                                //                   decoration: BoxDecoration(
+                                //                     image: DecorationImage(
+                                //                       fit: BoxFit.cover,
+                                //                       image: FileImage(
+                                //                           File(snapshot.data!)),
+                                //                     ),
+                                //                     color: Colors.white,
+                                //                     boxShadow: const [
+                                //                       BoxShadow(
+                                //                           color: Colors.black54,
+                                //                           blurRadius: 5,
+                                //                           offset: Offset(2, -2))
+                                //                     ],
+                                //                     borderRadius:
+                                //                         const BorderRadius.all(
+                                //                             Radius.circular(
+                                //                                 10)),
+                                //                   ),
+                                //                 ),
+                                //                 Column(
+                                //                   mainAxisAlignment:
+                                //                       MainAxisAlignment.end,
+                                //                   children: [
+                                //                     Row(
+                                //                       mainAxisAlignment:
+                                //                           MainAxisAlignment.end,
+                                //                       children: [
+                                //                         DownloadButton(
+                                //                           function: () async {
+                                //                             await ImageGallerySaver
+                                //                                     .saveFile(
+                                //                                         data.path)
+                                //                                 .then(
+                                //                               (value) => Fluttertoast.showToast(
+                                //                                   msg:
+                                //                                       "The file has been saved into your gallery",
+                                //                                   toastLength: Toast
+                                //                                       .LENGTH_SHORT,
+                                //                                   gravity:
+                                //                                       ToastGravity
+                                //                                           .SNACKBAR,
+                                //                                   timeInSecForIosWeb:
+                                //                                       1,
+                                //                                   backgroundColor:
+                                //                                       const Color(
+                                //                                           0xff61FD5E),
+                                //                                   textColor:
+                                //                                       Colors
+                                //                                           .black,
+                                //                                   fontSize:
+                                //                                       16.0),
+                                //                             );
+                                //                           },
+                                //                         ),
+                                //                       ],
+                                //                     ),
+                                //                   ],
+                                //                 ),
+                                //               ],
+                                //             ),
+                                //           )
+                                //         : Container(
+                                //             decoration: const BoxDecoration(
+                                //               color: Colors.white,
+                                //               borderRadius: BorderRadius.all(
+                                //                   Radius.circular(10)),
+                                //               boxShadow: [
+                                //                 BoxShadow(
+                                //                     color: Colors.black54,
+                                //                     blurRadius: 5,
+                                //                     offset: Offset(-2, 2)),
+                                //               ],
+                                //             ),
+                                //             child: const Center(
+                                //               child:
+                                //                   CircularProgressIndicator(),
+                                //             ),
+                                //           );
+                                //   },
+                                // );
                               },
                             ),
                           ),

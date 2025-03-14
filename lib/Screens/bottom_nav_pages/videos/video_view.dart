@@ -3,13 +3,15 @@ import 'dart:io';
 
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:video_player/video_player.dart';
+import 'package:wp_status_saver/widgets/bottom_nav_options.dart';
 
 class VideoView extends StatefulWidget {
-  const VideoView({super.key, this.videPath});
-  final String? videPath;
+  const VideoView({super.key, this.videoPath});
+  final String? videoPath;
   @override
   State<VideoView> createState() => _VideoViewState();
 }
@@ -23,7 +25,8 @@ class _VideoViewState extends State<VideoView> {
     super.initState();
 
     _chewieController = ChewieController(
-      videoPlayerController: VideoPlayerController.file(File(widget.videPath!)),
+      videoPlayerController:
+          VideoPlayerController.file(File(widget.videoPath!)),
       autoInitialize: true,
       autoPlay: true,
       looping: true,
@@ -43,37 +46,26 @@ class _VideoViewState extends State<VideoView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Chewie(controller: _chewieController!),
-      floatingActionButton: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: List.generate(
-          buttonList.length,
-          (index) => FloatingActionButton(
-            heroTag: index,
-            onPressed: () async {
-              switch (index) {
-                case 0:
-                  await ImageGallerySaver.saveFile(widget.videPath!).then(
-                    (value) => ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                          content: Text('Video saved into your gallery')),
-                    ),
-                  );
-                  log("Download Image");
-                  break;
-                case 1:
-                  Share.shareFiles([widget.videPath!]).then(
-                    (value) => ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('The file has Shared')),
-                    ),
-                  );
-                  log("Share Image");
-                  break;
-              }
-            },
-            child: buttonList[index],
-          ),
+      appBar: AppBar(
+        centerTitle: true,
+        backgroundColor: const Color(0xff61FD5E),
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: const Icon(Icons.arrow_back_ios),
         ),
+      ),
+      body: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(bottom: 90),
+            child: Chewie(controller: _chewieController!),
+          ),
+          Align(
+              alignment: Alignment.bottomCenter,
+              child: BottomNavOptions(filePath: widget.videoPath!))
+        ],
       ),
     );
   }
