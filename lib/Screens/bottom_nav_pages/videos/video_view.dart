@@ -64,8 +64,7 @@ class _VideoViewState extends State<VideoView> {
                 case 1:
                   Share.shareFiles([widget.videPath!]).then(
                     (value) => ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                          content: Text('The file has Shared')),
+                      const SnackBar(content: Text('The file has Shared')),
                     ),
                   );
                   log("Share Image");

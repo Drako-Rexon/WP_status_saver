@@ -1,9 +1,4 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:wp_status_saver/Provider/bottom_nav_provider.dart';
@@ -19,62 +14,76 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final List<Widget> _pages = const [ImageHomePage(), VideoHomePage()];
-  BannerAd? _bannerAd;
-  final _navBarItems = [
-    PersistentBottomNavBarItem(icon: const Icon(Icons.home), title: "Image"),
-    PersistentBottomNavBarItem(
-        icon: const Icon(Icons.video_call), title: "Video"),
-  ];
 
   @override
   void initState() {
     super.initState();
-    // requestPermission();
   }
 
-  void requestPermission() async {
-    // final status = await Permission.storage.request();
-    final PermissionStatus statusmanage =
-        await Permission.manageExternalStorage.request();
-    // final statusImage = await Permission.photos;
-    // final statusVideo = await Permission.videos;
-
-    // log("image status: $statusImage");
-    // log("video status: $statusVideo");
-    if (statusmanage.isDenied) {
-      await Fluttertoast.showToast(
-          msg: "The permission has been denied by the user.",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16.0);
-    }
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<BottomNavProvider>(
-      builder: (BuildContext ctx, BottomNavProvider value, Widget? _) =>
-          Scaffold(
-        body: _pages[value.currentIndex],
-        bottomNavigationBar: PersistentTabView(
-          context,
-          screens: _pages,
-          items: _navBarItems,
+    return SafeArea(
+      child: Consumer<BottomNavProvider>(
+        builder: (BuildContext ctx, BottomNavProvider value, Widget? _) =>
+            Scaffold(
+          body: _pages[value.currentIndex],
+          bottomNavigationBar: Container(
+            height: 60,
+            margin: const EdgeInsets.only(right: 120, left: 120, bottom: 20),
+            decoration: const BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(30)),
+              color: Colors.black,
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                InkWell(
+                  overlayColor: MaterialStateProperty.all(Colors.transparent),
+                  onTap: () => value.changeIndex(0),
+                  child: Container(
+                    margin: const EdgeInsets.all(10),
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: value.currentIndex == 0
+                          ? const Color(0xff61FD5E)
+                          : Colors.black,
+                    ),
+                    child: Icon(
+                      Icons.image_outlined,
+                      color:
+                          value.currentIndex == 0 ? Colors.black : Colors.white,
+                    ),
+                  ),
+                ),
+                InkWell(
+                  overlayColor: MaterialStateProperty.all(Colors.transparent),
+                  onTap: () => value.changeIndex(1),
+                  child: Container(
+                    margin: const EdgeInsets.all(10),
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: value.currentIndex == 1
+                          ? const Color(0xff61FD5E)
+                          : Colors.black,
+                    ),
+                    child: Icon(
+                      Icons.video_call,
+                      color:
+                          value.currentIndex == 1 ? Colors.black : Colors.white,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
-        // bottomNavigationBar: BottomNavigationBar(
-        //   currentIndex: value.currentIndex,
-        //   onTap: (val) {
-        //     value.changeIndex(val);
-        //   },
-        //   items: const [
-        //     BottomNavigationBarItem(icon: Icon(Icons.image), label: "Images"),
-        //     BottomNavigationBarItem(
-        //         icon: Icon(Icons.video_call), label: "Videos"),
-        //   ],
-        // ),
       ),
     );
   }

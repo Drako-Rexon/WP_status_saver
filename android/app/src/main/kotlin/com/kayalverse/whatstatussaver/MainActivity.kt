@@ -1,4 +1,4 @@
-package com.example.wp_status_saver
+package com.kayalverse.whatstatussaver
 
 import io.flutter.embedding.android.FlutterActivity
 

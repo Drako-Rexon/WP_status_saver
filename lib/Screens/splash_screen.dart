@@ -16,8 +16,13 @@ class _SplashScreenState extends State<SplashScreen> {
     navigate();
   }
 
-  void navigate() {
-    Future.delayed(const Duration(milliseconds: 200), () {
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  void navigate() async {
+    await Future.delayed(const Duration(milliseconds: 200), () {
       Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (_) => const HomePage()),
