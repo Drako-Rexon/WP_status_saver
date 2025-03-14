@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:wp_status_saver/Provider/bottom_nav_provider.dart';
 import 'package:wp_status_saver/Screens/bottom_nav_pages/images/image.dart';

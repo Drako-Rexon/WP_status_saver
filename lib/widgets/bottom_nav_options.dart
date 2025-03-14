@@ -1,3 +1,6 @@
+import 'dart:developer';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:share_plus/share_plus.dart';
@@ -25,6 +28,8 @@ class BottomNavOptions extends StatelessWidget {
           InkWell(
             overlayColor: MaterialStateProperty.all(Colors.transparent),
             onTap: () async {
+              log(filePath);
+
               await ImageGallerySaver.saveFile(filePath).then(
                 (value) => ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('File saved into your gallery')),
@@ -47,7 +52,7 @@ class BottomNavOptions extends StatelessWidget {
           InkWell(
             overlayColor: MaterialStateProperty.all(Colors.transparent),
             onTap: () async {
-              Share.shareFiles([filePath]).then(
+              Share.shareXFiles([XFile(filePath)]).then(
                 (value) => ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Image has shared')),
                 ),

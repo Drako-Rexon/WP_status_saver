@@ -60,10 +60,6 @@ class _ImageHomePageState extends State<ImageHomePage> {
             ),
           ),
           backgroundColor: const Color(0xff61FD5E),
-          leading: IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.arrow_back_ios),
-          ),
         ),
         body: Column(
           children: [
